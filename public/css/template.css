@@ -1,0 +1,13 @@
+.container {
+    background-color: lightGrey;
+    padding: 25px;
+    height: 100%;
+}
+.logo img {
+    padding: 0 25px 25px;
+}
+.header .user,
+.footer .copyright,
+.footer .disclaimer {
+    text-align: center;
+}

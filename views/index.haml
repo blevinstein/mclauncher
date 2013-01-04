@@ -1,0 +1,23 @@
+- user = User.get(session[:user])
+%form.row{:method=>'post',:action=>'server'}
+  %label.span3.offset3 Servers
+  %input.span3.btn-success{:type=>'submit',:value=>'Start',:name=>'start'}
+.row
+  %label.span3 ID
+  %label.span3 IP
+  %label.span3 Status
+- user.servers.each do |server|
+  %form{:method=>'post',:action=>'server'}
+    .row
+      %label.span3= server.instance_id
+      %input{:type=>'hidden',:name=>'instance_id',:value=>server.instance_id}
+      %label.span3= server.instance.ip_address
+      %label.span3= server.status
+      %input.span3.btn-danger{:type=>'submit',:value=>'Stop',:name=>'stop'}
+%form{:method=>'post',:action=>'backup'}
+  .row
+    %label.span3
+      Backups:
+    %input.span2.btn-success{:type=>'submit',:value=>'Backup',:name=>'backup'}
+    %input.span2.btn-warning{:type=>'submit',:value=>'Restore',:name=>'restore'}
+    %input.span2.btn-danger{:type=>'submit',:value=>'Delete',:name=>'delete'}

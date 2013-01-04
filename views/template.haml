@@ -1,0 +1,28 @@
+%head
+  %title Minecraft Server Launcher
+  = stylesheet 'css/bootstrap.css', 'css/bootstrap-responsive.css'
+  = stylesheet 'css/template.css'
+  = yield_content :head
+%body
+  .container
+    .header.row
+      .logo.span3
+        %a{:href=>'/'}
+          %img{:src=>'img/minecraft.png'}
+      .title.span6
+        %h1 Minecraft Server Launcher
+      - user = User.get(session[:user])
+      - if user
+        .user.span3
+          = user.username
+          &nbsp;|&nbsp;
+          %a{:href => '/account'} Account
+          &nbsp;|&nbsp;
+          %a{:href => '/logout'} Logout
+    .body
+      = yield
+    .footer.row
+      .copyright.span4.offset4
+        Brian Levinstein &copy; #{Time.now.strftime('%Y')}
+      .disclaimer.span4.offset4
+        (Minecraft&trade; is property of Mojang, Inc.)
