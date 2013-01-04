@@ -3,11 +3,14 @@ require 'sinatra/contrib'
 
 require 'haml'
 
+require 'rufus/scheduler'
+
 require './config.rb'
 
 class MCLauncher < Sinatra::Base
   set :port, ENV['PORT'] || 4567
   set :environment, $environment
+  set :scheduler, Rufus::Scheduler.start_new
   enable :sessions
 
   set :haml, :layout => :template
@@ -15,6 +18,8 @@ class MCLauncher < Sinatra::Base
   
   def require_auth
     redirect '/login' unless session[:user]
+    @user = User.get(session[:user])
+    fail if @user.nil?
   end
 
   get '/login' do
@@ -39,7 +44,7 @@ class MCLauncher < Sinatra::Base
 
   get '/account' do
     require_auth
-    haml :account, :locals => {:flash => nil, :user=>User.get(session[:user])}
+    haml :account, :locals => {:flash => nil, :user=>@user}
   end
 
   post '/aws' do
@@ -47,10 +52,9 @@ class MCLauncher < Sinatra::Base
     if params[:access_key_id] && params[:secret_access_key]
       #ec2 = AWS::EC2.new(:access_key_id => params[:access_key_id],
       #                   :secret_access_key => params[:secret_access_key])
-      user = User.get(session[:user])
-      user.access_key_id = params[:access_key_id]
-      user.secret_access_key = params[:secret_access_key]
-      user.save
+      @user.access_key_id = params[:access_key_id]
+      @user.secret_access_key = params[:secret_access_key]
+      @user.save
     end
     redirect '/account'
   end
@@ -58,14 +62,13 @@ class MCLauncher < Sinatra::Base
   post '/server' do
     require_auth
     if params[:start]
-      user = User.get(session[:user])
       server = Server.new
-      server.user = user
+      server.user = @user
       server.start
       server.save
     elsif params[:stop]
       server = Server.get(params[:instance_id])
-      fail if server.user.username != session[:user]
+      fail if server.user != @user
       server.stop
     end
     redirect '/'
@@ -73,7 +76,7 @@ class MCLauncher < Sinatra::Base
 
   get '/' do
     require_auth
-    Server.each do |server|
+    @user.servers.each do |server|
       server.destroy if server.status == :terminated
     end
     haml :index

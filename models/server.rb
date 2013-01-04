@@ -14,8 +14,7 @@ class Server
 
   def start
     self.instance_id = ec2.instances.create(:image_id => Server.image_id,
-                                      :instance_type => 't1.micro').id
-    #instance.associate_elastic_ip(ec2.elastic_ips.allocate)
+                                            :instance_type => 't1.micro').id
   end
 
   def status
@@ -27,7 +26,6 @@ class Server
   end
 
   def stop
-    #instance.disassociate_elastic_ip
     instance.terminate
   end
 

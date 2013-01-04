@@ -1,3 +1,6 @@
+- content_for :head do
+  = stylesheet 'css/index.css'
+
 - user = User.get(session[:user])
 %form.row{:method=>'post',:action=>'server'}
   %label.span3.offset3 Servers

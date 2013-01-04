@@ -12,4 +12,6 @@ gem 'dm-sqlite-adapter', :group => :development
 gem 'dm-mysql-adapter', :group => :production
 gem 'dm-migrations'
 
+gem 'rufus-scheduler'
+
 gem 'thin'
