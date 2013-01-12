@@ -17,7 +17,7 @@ class Server
     id = user.ec2.instances.create(:image_id => config['image_id'],
                                    :instance_type => 't1.micro',
                                    :key_name => User.config['key_pair'],
-                                   :security_group => User.config['security_group']).id
+                                   :security_groups => User.config['security_group']).id
     Server.new(:user => user, :instance_id => id)
   end
 

@@ -34,19 +34,18 @@ class User
     @ec2 = nil
     @s3 = nil
     # generate key pair
-    key_pair = ec2.key_pairs[config['key_pair']]
+    key_pair = ec2.key_pairs[User.config['key_pair']]
     key_pair.delete if key_pair.exists?
-    private_key = ec2.key_pairs.create(config['key_pair']).private_key
+    private_key = ec2.key_pairs.create(User.config['key_pair']).private_key
     # create security group
-    security_group = ec2.security_groups[config['security_group']]
-    if not security_group.exists?
-      security_group = ec2.security_groups.create(config['security_group'])
+    if not ec2.security_groups.any? {|group| group.name == User.config['security_group']}
+      security_group = ec2.security_groups.create(User.config['security_group'])
       security_group.authorize_ingress(:tcp, 22) # ssh
       security_group.authorize_ingress(:tcp, 25565) # minecraft
       security_group.allow_ping
     end
     # create a backups bucket on S3
-    s3.buckets.create(config['s3_bucket']) unless s3.buckets[config['s3_bucket']].exists?
+    s3.buckets.create(User.config['s3_bucket']) unless s3.buckets[User.config['s3_bucket']].exists?
     save
   end
 
