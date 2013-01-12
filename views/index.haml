@@ -1,7 +1,6 @@
 - content_for :head do
   = stylesheet 'css/index.css'
 
-- user = User.get(session[:user])
 .row
   %form{:method=>'post',:action=>'server'}
     %label.span3.offset3 Servers
@@ -13,10 +12,10 @@
         %th ID
         %th IP
         %th Status
-      - if user.servers.empty?
+      - if @user.servers.empty?
         %tr
           %td{:colspan=>3} (No servers)
-      - user.servers.each do |server|
+      - @user.servers.each do |server|
         %form{:method=>'post',:action=>'server'}
           %tr
             %td= server.instance_id

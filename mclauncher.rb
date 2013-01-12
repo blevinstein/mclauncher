@@ -15,6 +15,11 @@ class MCLauncher < Sinatra::Base
 
   set :haml, :layout => :template
   register Sinatra::Contrib
+
+  before do
+    @flash = session[:flash]
+    session[:flash] = nil
+  end
   
   def require_auth
     redirect '/login' unless session[:user]
@@ -24,7 +29,7 @@ class MCLauncher < Sinatra::Base
 
   get '/login' do
     redirect '/' if session[:user]
-    haml :login, :locals => {:flash => nil}
+    haml :login
   end
 
   post '/login' do
@@ -33,7 +38,8 @@ class MCLauncher < Sinatra::Base
       session[:user] = user.username
       redirect '/'
     else
-      haml :login, :locals => {:flash => "Incorrect username or password."}
+      @flash = 'Incorrect username or password.'
+      haml :login
     end
   end
 
@@ -44,13 +50,14 @@ class MCLauncher < Sinatra::Base
 
   get '/account' do
     require_auth
-    haml :account, :locals => {:flash => nil, :user=>@user}
+    haml :account, :locals => {:user=>@user}
   end
 
   post '/aws' do
     require_auth
     if params[:access_key_id] && params[:secret_access_key]
       @user.set_aws_keys(params[:access_key_id], params[:secret_access_key])
+      session[:flash] = 'Updated AWS keys!'
     end
     redirect '/account'
   end
@@ -60,10 +67,12 @@ class MCLauncher < Sinatra::Base
     if params[:start]
       server = Server.create(@user)
       server.save
+      session[:flash] = 'Server starting.'
     elsif params[:stop]
       server = Server.get(params[:instance_id])
       fail if server.user != @user
       server.stop
+      session[:flash] = 'Server stopping.'
     end
     redirect '/'
   end
@@ -73,7 +82,7 @@ class MCLauncher < Sinatra::Base
     @user.servers.each do |server|
       server.destroy if server.status == :terminated
     end
-    haml :index
+    haml :index, :locals => {:user=>@user}
   end
 
   run! if app_file == $0

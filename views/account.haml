@@ -2,14 +2,8 @@
   = stylesheet 'css/account.css'
 
 %form{:action=>'/aws', :method=>'post'}
-  .row.error
-    - if flash then
-      %p.span4.offset4= flash
-    - else
-      %p &nbsp;
   .row
-    - user = User.get(session[:user])
     %label.span2.offset2 AWS Credentials
-    %input.span2{:type=>'text',:name=>'access_key_id',:value=>user.access_key_id}
-    %input.span2{:type=>'text',:name=>'secret_access_key',:value=>user.secret_access_key}
+    %input.span2{:type=>'text',:name=>'access_key_id',:value=>@user.access_key_id}
+    %input.span2{:type=>'text',:name=>'secret_access_key',:value=>@user.secret_access_key}
     %input.span2.btn-success{:type=>'submit',:value=>'Update'}

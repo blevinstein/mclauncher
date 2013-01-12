@@ -12,14 +12,18 @@
           %img{:src=>'img/minecraft.png'}
       .title.span6
         %h1 Minecraft Server Launcher
-      - user = User.get(session[:user])
-      - if user
+      - if @user
         .user.span3
-          = user.username
+          = @user.username
           &nbsp;|&nbsp;
           %a{:href => '/account'} Account
           &nbsp;|&nbsp;
           %a{:href => '/logout'} Logout
+    .flash.row.error
+      -if @flash then
+        %p.span4.offset4= @flash
+      -else
+        %p &nbsp;
     .body
       = yield
     .footer.row
