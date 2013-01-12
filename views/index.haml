@@ -12,6 +12,7 @@
         %th ID
         %th IP
         %th Status
+        %th
       - if @user.servers.empty?
         %tr
           %td{:colspan=>3} (No servers)
@@ -19,8 +20,7 @@
         %form{:method=>'post',:action=>'server'}
           %tr
             %td= server.instance_id
-            %td
-              %input{:type=>'hidden',:name=>'instance_id',:value=>server.instance_id}
+            %input{:type=>'hidden',:name=>'instance_id',:value=>server.instance_id}
             %td= server.instance.ip_address
             %td= server.status
             %td
