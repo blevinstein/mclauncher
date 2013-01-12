@@ -15,7 +15,7 @@ namespace 'db' do
     end
   end
 
-  desc 'Migrate the database; destroys existing data.'
+  desc 'Migrate the database.'
   task :migrate do
     DataMapper.auto_upgrade!
     #DataMapper.auto_migrate!
