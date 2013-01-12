@@ -6,9 +6,9 @@ class User
   has n, :servers
   has n, :backups
 
-  property :username,          String, :key => true
-  property :password_hash,     String, :required => true
-  property :password_salt,     String, :required => true
+  property :username,          String,  :key => true
+  property :password_hash,     String,  :required => true
+  property :password_salt,     String,  :required => true
   property :access_key_id,     String
   property :secret_access_key, String
   property :private_key,       String
@@ -18,9 +18,8 @@ class User
   end
 
   def password=(new_password)
-    self.password_salt = Time.now.to_s + username
+    self.password_salt = Time.now.to_f.to_s + username
     self.password_hash = Digest::SHA1.hexdigest(new_password + password_salt)
-    save
   end
 
   def password?(given_password)
@@ -29,14 +28,14 @@ class User
 
   def set_aws_keys(access_key, secret_key)
     # update ec2 and s3 credentials
-    access_key_id = access_key
-    secret_access_key = secret_key
+    fail unless update(:access_key_id => access_key,
+                       :secret_access_key => secret_key)
     @ec2 = nil
     @s3 = nil
     # generate key pair
     key_pair = ec2.key_pairs[User.config['key_pair']]
     key_pair.delete if key_pair.exists?
-    private_key = ec2.key_pairs.create(User.config['key_pair']).private_key
+    fail unless update(:private_key => ec2.key_pairs.create(User.config['key_pair']).private_key)
     # create security group
     if not ec2.security_groups.any? {|group| group.name == User.config['security_group']}
       security_group = ec2.security_groups.create(User.config['security_group'])
@@ -46,7 +45,6 @@ class User
     end
     # create a backups bucket on S3
     s3.buckets.create(User.config['s3_bucket']) unless s3.buckets[User.config['s3_bucket']].exists?
-    save
   end
 
   def ec2

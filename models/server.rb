@@ -8,6 +8,7 @@ class Server
   has 1, :elastic_ip
 
   property :instance_id, String, :key => true
+  property :private_key, String
 
   def self.config
     @@config ||= YAML.load(open('./config.yml').read)
@@ -18,7 +19,7 @@ class Server
                                    :instance_type => 't1.micro',
                                    :key_name => User.config['key_pair'],
                                    :security_groups => User.config['security_group']).id
-    Server.new(:user => user, :instance_id => id)
+    super(:user => user, :instance_id => id, :private_key => user.private_key)
   end
 
   def status

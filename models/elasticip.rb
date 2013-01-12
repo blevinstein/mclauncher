@@ -10,7 +10,7 @@ class ElasticIp
 
   def self.create(user)
     ip = user.ec2.elastic_ips.allocate
-    ElasticIp.new(:user => user, :ip_address => ip)
+    super(:user => user, :ip_address => ip)
   end
 
   def associate(instance)
