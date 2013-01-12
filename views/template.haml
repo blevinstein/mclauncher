@@ -19,7 +19,7 @@
           %a{:href => '/account'} Account
           &nbsp;|&nbsp;
           %a{:href => '/logout'} Logout
-    .flash.row.error
+    .flash.row
       -if @flash then
         %p.span4.offset4= @flash
       -else
