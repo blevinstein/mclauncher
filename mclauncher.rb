@@ -66,13 +66,24 @@ class MCLauncher < Sinatra::Base
     require_auth
     if params[:start]
       server = Server.create(@user)
-      server.save
+      session[:flash] = 'Server starting.'
+    end
+    redirect '/'
+  end
+
+  post '/server/:instance_id' do
+    require_auth
+    server = Server.get(params[:instance_id])
+    fail if server.user != @user
+    if params[:start]
+      server.start
       session[:flash] = 'Server starting.'
     elsif params[:stop]
-      server = Server.get(params[:instance_id])
-      fail if server.user != @user
       server.stop
       session[:flash] = 'Server stopping.'
+    elsif params[:term]
+      server.destroy
+      session[:flash] = 'Server terminating.'
     end
     redirect '/'
   end

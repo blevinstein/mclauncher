@@ -1,10 +1,11 @@
 - content_for :head do
   = stylesheet 'css/index.css'
+  %meta{'http-equiv'=>'refresh', :content=>5}
 
 .row
   %form{:method=>'post',:action=>'server'}
     %label.span3.offset3 Servers
-    %input.span3.btn-success{:type=>'submit',:value=>'Start',:name=>'start'}
+    %input.span3.btn.btn-success{:type=>'submit',:value=>'Start',:name=>'start'}
 .row
   .span12
     %table.table.table-bordered
@@ -17,18 +18,24 @@
         %tr
           %td{:colspan=>3} (No servers)
       - @user.servers.each do |server|
-        %form{:method=>'post',:action=>'server'}
+        %form{:method=>'post',:action=>"server/#{server.instance_id}"}
           %tr
             %td= server.instance_id
             %input{:type=>'hidden',:name=>'instance_id',:value=>server.instance_id}
             %td= server.instance.ip_address
             %td= server.status
             %td
-              %input.span3.btn-danger{:type=>'submit',:value=>'Stop',:name=>'stop'}
+              .btn-group
+                - if server.status != :running
+                  %input.btn.btn-success{:type=>'submit',:value=>'Start',:name=>'start'}
+                - if server.status != :stopped
+                  %input.btn.btn-warning{:type=>'submit',:value=>'Stop',:name=>'stop'}
+                %input.btn.btn-danger{:type=>'submit',:value=>'Terminate',:name=>'term'}
 %form{:method=>'post',:action=>'backup'}
   .row
     %label.span3
       Backups:
-    %input.span2.btn-success{:type=>'submit',:value=>'Backup',:name=>'backup'}
-    %input.span2.btn-warning{:type=>'submit',:value=>'Restore',:name=>'restore'}
-    %input.span2.btn-danger{:type=>'submit',:value=>'Delete',:name=>'delete'}
+    .btn-group
+      %input.span2.btn.btn-success{:type=>'submit',:value=>'Backup',:name=>'backup'}
+      %input.span2.btn.btn-warning{:type=>'submit',:value=>'Restore',:name=>'restore'}
+      %input.span2.btn.btn-danger{:type=>'submit',:value=>'Delete',:name=>'delete'}
