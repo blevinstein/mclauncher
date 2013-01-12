@@ -50,11 +50,7 @@ class MCLauncher < Sinatra::Base
   post '/aws' do
     require_auth
     if params[:access_key_id] && params[:secret_access_key]
-      #ec2 = AWS::EC2.new(:access_key_id => params[:access_key_id],
-      #                   :secret_access_key => params[:secret_access_key])
-      @user.access_key_id = params[:access_key_id]
-      @user.secret_access_key = params[:secret_access_key]
-      @user.save
+      @user.set_aws_keys(params[:access_key_id], params[:secret_access_key])
     end
     redirect '/account'
   end
@@ -62,9 +58,7 @@ class MCLauncher < Sinatra::Base
   post '/server' do
     require_auth
     if params[:start]
-      server = Server.new
-      server.user = @user
-      server.start
+      server = Server.create(@user)
       server.save
     elsif params[:stop]
       server = Server.get(params[:instance_id])

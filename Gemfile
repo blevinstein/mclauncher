@@ -2,6 +2,10 @@ source :rubygems
 
 gem 'aws-sdk'
 
+gem 'net-ssh'
+gem 'net-scp'
+gem 'net-sftp'
+
 gem 'sinatra'
 gem 'sinatra-contrib'
 

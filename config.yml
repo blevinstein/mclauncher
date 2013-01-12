@@ -1,0 +1,5 @@
+image_id: ami-1624987f
+key_pair: minecraft_launcher
+security_group: minecraft_instances
+user: ec2-user
+s3_bucket: minecraft_backups

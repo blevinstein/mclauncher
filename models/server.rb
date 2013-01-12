@@ -1,24 +1,28 @@
 require 'aws-sdk'
+require 'yaml'
 
 class Server
   include DataMapper::Resource
 
-  @@image_id = 'ami-1624987f'
-  def self.image_id
-    @@image_id
-  end
-
   belongs_to :user
+  has 1, :elastic_ip
 
   property :instance_id, String, :key => true
 
-  def start
-    self.instance_id = ec2.instances.create(:image_id => Server.image_id,
-                                            :instance_type => 't1.micro').id
+  def self.config
+    @@config ||= YAML.load(open('./config.yml').read)
+  end
+
+  def self.create(user)
+    id = user.ec2.instances.create(:image_id => config['image_id'],
+                                   :instance_type => 't1.micro',
+                                   :key_name => User.config['key_pair'],
+                                   :security_group => User.config['security_group']).id
+    Server.new(:user => user, :instance_id => id)
   end
 
   def status
-    ec2.instances[instance_id].status
+    instance.status
   end
 
   def reboot
@@ -26,15 +30,15 @@ class Server
   end
 
   def stop
+    instance.stop
+  end
+
+  def destroy
     instance.terminate
+    super
   end
 
   def instance
-    @instance = @instance || ec2.instances[instance_id]
-  end
-  
-  def ec2
-    @ec2 = @ec2 || AWS::EC2.new(:access_key_id => user.access_key_id,
-                                :secret_access_key => user.secret_access_key)
+    @instance ||= user.ec2.instances[instance_id]
   end
 end
