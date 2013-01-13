@@ -26,11 +26,12 @@
             %td= server.status
             %td
               .btn-group
-                - if server.status != :running
+                - if server.status == :stopped
                   %input.btn.btn-success{:type=>'submit',:value=>'Start',:name=>'start'}
-                - if server.status != :stopped
+                - if server.status == :running
                   %input.btn.btn-warning{:type=>'submit',:value=>'Stop',:name=>'stop'}
-                %input.btn.btn-danger{:type=>'submit',:value=>'Terminate',:name=>'term'}
+                - if server.status != :terminated
+                  %input.btn.btn-danger{:type=>'submit',:value=>'Terminate',:name=>'term'}
 %form{:method=>'post',:action=>'backup'}
   .row
     %label.span3
