@@ -3,14 +3,11 @@ require 'sinatra/contrib'
 
 require 'haml'
 
-require 'rufus/scheduler'
-
 require './config.rb'
 
 class MCLauncher < Sinatra::Base
   set :port, ENV['PORT'] || 4567
   set :environment, $environment
-  set :scheduler, Rufus::Scheduler.start_new
   enable :sessions
 
   set :haml, :layout => :template
@@ -82,7 +79,7 @@ class MCLauncher < Sinatra::Base
       server.stop
       session[:flash] = 'Server stopping.'
     elsif params[:term]
-      server.destroy
+      server.terminate
       session[:flash] = 'Server terminating.'
     end
     redirect '/'

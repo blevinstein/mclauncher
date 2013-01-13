@@ -11,7 +11,7 @@ class User
   property :password_salt,     String,  :required => true
   property :access_key_id,     String
   property :secret_access_key, String
-  property :private_key,       String
+  property :private_key,       String,  :length => 2048
   
   def self.config
     @@config ||= YAML.load(open('./config.yml').read)
@@ -35,7 +35,8 @@ class User
     # generate key pair
     key_pair = ec2.key_pairs[User.config['key_pair']]
     key_pair.delete if key_pair.exists?
-    fail unless update(:private_key => ec2.key_pairs.create(User.config['key_pair']).private_key)
+    #fail unless update(:private_key => ec2.key_pairs.create(User.config['key_pair']).private_key)
+    update(:private_key => ec2.key_pairs.create(User.config['key_pair']).private_key)
     # create security group
     if not ec2.security_groups.any? {|group| group.name == User.config['security_group']}
       security_group = ec2.security_groups.create(User.config['security_group'])
